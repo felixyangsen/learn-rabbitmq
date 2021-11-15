@@ -11,8 +11,32 @@ func main() {
 	onDexteamCreateSend()
 }
 
+func InitBasic() {
+	ch := config.GetRabbitmqChannel()
+	_, err := ch.QueueDeclare(
+		"on_outlet_create",
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+	tool.FailOnError(err, "failed to declare queue")
+
+	_, err = ch.QueueDeclare(
+		"on_dexteam_create",
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+	tool.FailOnError(err, "failed to declare queue")
+}
+
 func onDexteamCreateSend() {
 	config.ConnectRabbitmq()
+	InitBasic()
 	ch := config.GetRabbitmqChannel()
 
 	param := map[string]interface{}{
@@ -38,6 +62,7 @@ func onDexteamCreateSend() {
 
 func onOutletCreateSend() {
 	config.ConnectRabbitmq()
+	InitBasic()
 	ch := config.GetRabbitmqChannel()
 
 	param := map[string]interface{}{

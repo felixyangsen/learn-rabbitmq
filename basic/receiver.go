@@ -20,6 +20,7 @@ func main() {
 
 func onOutletCreateListen() {
 	config.ConnectRabbitmq()
+	InitBasic()
 	ch := config.GetRabbitmqChannel()
 
 	msgs, err := ch.Consume(
@@ -48,6 +49,7 @@ func onOutletCreateListen() {
 
 func onDexteamCreateListen() {
 	config.ConnectRabbitmq()
+	InitBasic()
 	ch := config.GetRabbitmqChannel()
 
 	msgs, err := ch.Consume(
@@ -72,4 +74,27 @@ func onDexteamCreateListen() {
 
 	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
 	<-forever
+}
+
+func InitBasic() {
+	ch := config.GetRabbitmqChannel()
+	_, err := ch.QueueDeclare(
+		"test_queue",	
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+	tool.FailOnError(err, "failed to declare queue")
+
+	_, err = ch.QueueDeclare(
+		"on_dexteam_create",
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+	tool.FailOnError(err, "failed to declare queue")
 }
